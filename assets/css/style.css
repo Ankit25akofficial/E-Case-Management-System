@@ -1,0 +1,15 @@
+/* Add Google Fonts for a modern look */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Montserrat:wght@700&display=swap');
+
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .font-bold {
+    font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+}
+
+/* Optionally, you can further style navigation and footer text */
+nav, footer {
+    font-family: 'Roboto', Arial, sans-serif;
+}
