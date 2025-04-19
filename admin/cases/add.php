@@ -13,7 +13,7 @@ $errors = [];
 $success = false;
 $title = $description = $client_id = '';
 
-// Fetch clients for dropdown
+// Fetch clients for dropdown 
 $clients = [];
 $sql = "SELECT id, full_name FROM users WHERE user_type='client' ORDER BY full_name";
 $result = mysqli_query($conn, $sql);
