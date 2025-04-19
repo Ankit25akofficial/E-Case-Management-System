@@ -9,7 +9,7 @@
 [![Three.js](https://img.shields.io/badge/Three.js-r128-orange)](https://threejs.org)
 
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2000&pause=500&color=2563EB&center=true&width=800&height=50&lines=A+modern+web+application+to+digitize+and+streamline;judicial+case+management+processes+across+India's+legal+system" alt="Animated typing text" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=24&duration=2000&pause=500&color=2563EB&center=true&width=800&height=50&lines=A+modern+web+application+to+digitize+and+streamline;judicial+case+management" alt="Animated typing text" />
   
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=1500&pause=1000&color=4F46E5&center=true&width=800&height=30&lines=Transforming+legal+processes+through+cutting-edge+technology;Empowering+judiciary+with+digital+workflow+solutions" alt="Secondary animated text" />
   
