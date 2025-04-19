@@ -69,5 +69,6 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/e-case-management.git
-cd e-case-management
+
+git clone https://github.com/Ankit25akofficial/E-Case-Management-System.git
+cd E-Case-Management-System
