@@ -1,0 +1,228 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String           @id @default(uuid())
+  username        String           @unique
+  email           String           @unique
+  passwordHash    String
+  fullName        String
+  role            String           @default("CLIENT")
+  isEmailVerified Boolean          @default(false)
+  mfaEnabled      Boolean          @default(false)
+  mfaSecret       String?
+  isActive        Boolean          @default(true)
+  loginAttempts   Int              @default(0)
+  lockoutUntil    DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  profile         UserProfile?
+  clientCases     Case[]           @relation("ClientCases")
+  judgeCases      Case[]           @relation("JudgeCases")
+  lawyerCases     Case[]           @relation("LawyerCases")
+  documents       Document[]
+  notifications   Notification[]
+  sentMessages    Message[]        @relation("SentMessages")
+  receivedMessages Message[]       @relation("ReceivedMessages")
+  auditLogs       AuditLog[]
+  tasks           Task[]
+  appointments    Appointment[]
+  caseNotes       CaseNote[]
+  activityLogs    ActivityLog[]
+}
+
+model UserProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phoneNumber String?
+  address     String?
+  barNumber   String?  
+  specialty   String?  
+  bio         String?
+}
+
+model Court {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  location    String
+  roomNumber  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  cases       Case[]
+  hearings    Hearing[]
+}
+
+model Case {
+  id            String        @id @default(uuid())
+  caseNumber    String        @unique
+  title         String
+  description   String?
+  category      String        
+  status        String        @default("PENDING")
+  priority      String        @default("MEDIUM")
+  filingDate    DateTime      @default(now())
+  closingDate   DateTime?
+  
+  courtId       String
+  court         Court         @relation(fields: [courtId], references: [id])
+  clientId      String
+  client        User          @relation("ClientCases", fields: [clientId], references: [id])
+  judgeId       String?
+  judge         User?         @relation("JudgeCases", fields: [judgeId], references: [id])
+  lawyerId      String?
+  lawyer        User?         @relation("LawyerCases", fields: [lawyerId], references: [id])
+  
+  hearings      Hearing[]
+  documents     Document[]
+  evidence      EvidenceRecord[]
+  notes         CaseNote[]
+  tasks         Task[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([caseNumber])
+}
+
+model Hearing {
+  id            String        @id @default(uuid())
+  caseId        String
+  case          Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  courtId       String
+  court         Court         @relation(fields: [courtId], references: [id])
+  hearingDate   DateTime
+  location      String
+  notes         String?
+  outcome       String?
+  status        String        @default("SCHEDULED")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([hearingDate])
+}
+
+model Document {
+  id             String            @id @default(uuid())
+  caseId         String
+  case           Case              @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  userId         String
+  uploadedBy     User              @relation(fields: [userId], references: [id])
+  title          String
+  filePath       String            
+  fileType       String
+  fileSize       Int
+  version        Int               @default(1)
+  approvalStatus String            @default("PENDING")
+  digitalSignature String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model EvidenceRecord {
+  id            String   @id @default(uuid())
+  caseId        String
+  case          Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  filePath      String?
+  submittedBy   String
+  dateSubmitted DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model CaseNote {
+  id        String   @id @default(uuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  userId    String
+  author    User     @relation(fields: [userId], references: [id])
+  note      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  content     String
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  caseId      String?
+  case        Case?     @relation(fields: [caseId], references: [id], onDelete: SetNull)
+  userId      String
+  assignedTo  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  dueDate     DateTime?
+  isCompleted Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  details   String
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  details   String
+  createdAt DateTime @default(now())
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  fileUrl     String
+  format      String
+  generatedBy String
+  createdAt   DateTime @default(now())
+}
